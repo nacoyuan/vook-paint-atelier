@@ -1,5 +1,7 @@
 # VOOK Paint Atelier
 
+**[Open the live studio](https://nacoyuan.github.io/vook-paint-atelier/)**
+
 [中文说明](README.zh-CN.md) · English
 
 A lightweight, bilingual bicycle color studio built with vanilla JavaScript and Canvas. Explore paint ideas on four photographed bicycles, sample a reference image, and export a presentation poster. No account, server, analytics, or image upload required.

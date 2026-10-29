@@ -1,5 +1,7 @@
 # VOOK 自行车配色工作室
 
+**[打开在线配色工作室](https://nacoyuan.github.io/vook-paint-atelier/)**
+
 [English](README.md) · 中文
 
 基于原生 JavaScript 和 Canvas 的轻量自行车配色工具。提供四款实车预览、纯色与渐变、图片吸色及海报导出。无需账户和后端，不上传参考图片，不使用分析追踪。
