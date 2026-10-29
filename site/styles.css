@@ -1,0 +1,1107 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  color: #1d1d1f;
+  background: #fff;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid #e0e0e5;
+  border-radius: 9px;
+  background: white;
+  color: #555;
+  padding: 9px 12px;
+}
+button:hover {
+  background: #f3f3f6;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #85b9fa;
+  outline-offset: 2px;
+}
+header {
+  height: 70px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e3e3e8;
+  background: #fff;
+}
+.brand {
+  font-size: 25px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -1px;
+}
+.brand span {
+  margin-left: 18px;
+  font-size: 13px;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 2px;
+  color: #777;
+}
+header button {
+  font-size: 12px;
+}
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 326px;
+  height: calc(100dvh - 70px);
+}
+.stage {
+  background: #fff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.intro {
+  flex: none;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #999;
+}
+h1 {
+  font-size: 32px;
+  letter-spacing: -1px;
+  font-weight: 500;
+  margin: 10px 0 0;
+}
+#bikeWrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#bike {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  cursor: crosshair;
+}
+.modelCaption {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #999;
+  text-align: center;
+  margin: 16px 0 4px;
+}
+.panel {
+  background: #fff;
+  border-left: 1px solid #e4e4e9;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+.section {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+}
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.seg {
+  display: flex;
+  gap: 4px;
+  background: #f2f2f5;
+  padding: 4px;
+  border-radius: 10px;
+}
+.seg button {
+  border: 0;
+  background: transparent;
+  flex: 1;
+  font-size: 12px;
+  padding: 8px 4px;
+}
+.seg .active {
+  background: white;
+  box-shadow: 0 1px 5px #0001;
+  color: #222;
+}
+.presets {
+  display: flex;
+  gap: 7px;
+}
+.presets button {
+  flex: 1;
+  font-size: 11px;
+  padding: 9px 3px;
+}
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  border: 1px solid #d3d3d7;
+  border-radius: 50%;
+  vertical-align: -2px;
+}
+.rows {
+  display: grid;
+  gap: 4px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.row.selected {
+  background: #f3f5f9;
+  border-color: #dfe4ef;
+}
+.row span {
+  font-size: 12px;
+  flex: 1;
+}
+.hex {
+  width: 70px;
+  background: transparent;
+  border: 0;
+  font-size: 10px;
+  font-family: monospace;
+  color: #888;
+}
+.row input[type="color"] {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+  padding: 2px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+.row input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+.row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.reference {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.drop {
+  border: 1px dashed #d5d8e2;
+  border-radius: 10px;
+  text-align: center;
+  padding: 12px;
+  background: #fafafd;
+  flex: none;
+}
+.drop.has-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: clamp(190px, 38dvh, 350px);
+  max-height: 100%;
+  overflow: hidden;
+}
+.drop.has-image p {
+  flex: none;
+}
+.drop.has-image button {
+  flex: none;
+}
+.drop.drag {
+  background: #e9f2ff;
+}
+.drop button {
+  font-size: 11px;
+  padding: 8px 15px;
+}
+.drop p {
+  font-size: 10px;
+  color: #999;
+  margin: 8px 0 0;
+}
+#refWrap {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#ref {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  cursor: crosshair;
+}
+#sample {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  margin-top: 7px;
+  font-size: 10px;
+  flex: none;
+}
+#chip {
+  height: 20px;
+  width: 20px;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+}
+#sampleHex {
+  font-family: monospace;
+}
+#apply {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 6px 8px;
+}
+.status {
+  font-size: 10px;
+  color: #777;
+  line-height: 1.5;
+  margin-top: 8px;
+  flex: none;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.actions button {
+  width: 100%;
+  font-size: 11px;
+  padding: 8px;
+}
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  background: #222;
+  color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  display: none;
+}
+#loading {
+  color: #999;
+  font-size: 12px;
+}
+@media (max-height: 750px) and (min-width: 801px) {
+  .panel {
+    padding: 14px 18px;
+    gap: 10px;
+  }
+  .section {
+    padding-bottom: 10px;
+  }
+  .label {
+    margin-bottom: 7px;
+  }
+  .drop {
+    padding: 8px;
+  }
+  .row {
+    padding: 5px 8px;
+  }
+  .brand {
+    font-size: 22px;
+  }
+  header {
+    height: 60px;
+  }
+  main {
+    height: calc(100dvh - 60px);
+  }
+}
+@media (max-width: 800px) {
+  header {
+    padding: 0 20px;
+    height: 62px;
+  }
+  main {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .stage {
+    padding: 24px 15px;
+    height: 48dvh;
+    min-height: 300px;
+  }
+  h1 {
+    font-size: 25px;
+  }
+  .panel {
+    border-left: 0;
+    gap: 14px;
+    padding: 20px;
+  }
+  .reference {
+    min-height: 0;
+  }
+  .drop.has-image {
+    height: 280px;
+  }
+  .modelCaption {
+    margin: 5px 0;
+    font-size: 10px;
+  }
+  .actions {
+    padding-bottom: 5px;
+  }
+}
+.glossHeading {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 9px;
+}
+.glossHeading output {
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+#gloss {
+  width: 100%;
+  margin: 0;
+  accent-color: #222;
+  cursor: pointer;
+}
+.paintModes {
+  margin-bottom: 8px;
+}
+.row[hidden] {
+  display: none;
+}
+.drop.has-image {
+  height: clamp(170px, 34dvh, 320px);
+}
+#loupe {
+  display: none;
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  width: 140px;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid #d5d5dc;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px #0003;
+  overflow: hidden;
+}
+#loupeCanvas {
+  display: block;
+  width: 130px;
+  height: 130px;
+  border-radius: 7px;
+  image-rendering: pixelated;
+}
+#loupeHex {
+  display: block;
+  text-align: center;
+  font: 10px monospace;
+  padding: 5px 0 2px;
+  color: #555;
+}
+.actions {
+  margin-top: 0;
+  display: block;
+}
+.actions button {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 12px 8px;
+  border-color: #cfd5df;
+  background: #edf0f5;
+  color: #333f54;
+}
+.actions #export {
+  background: #1d1d1f;
+  color: #fff;
+  border-color: #1d1d1f;
+}
+.actions #export:hover {
+  background: #39393d;
+}
+.inspirationHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.inspirationHeading .label {
+  margin: 0;
+}
+#inspirationCount {
+  font-size: 10px;
+  color: #999;
+}
+.inspirationGroups {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.inspirationGroups button {
+  font-size: 10px;
+  padding: 5px 7px;
+  border: 0;
+  background: #f4f4f6;
+  color: #777;
+  flex: 1;
+  white-space: nowrap;
+}
+.inspirationGroups button.active {
+  background: #e8ecf3;
+  color: #303c50;
+}
+.inspirationList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.inspiration {
+  min-width: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 7px;
+  padding: 2px;
+  font-size: 9px;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.inspiration:hover {
+  border-color: #bac6d9;
+  background: #f4f6f9;
+}
+.inspirationSwatch {
+  height: 30px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #0000000d;
+  position: relative;
+  display: block;
+}
+.inspirationSwatch i {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid #0002;
+}
+.drop.has-image {
+  height: clamp(130px, 25dvh, 245px);
+}
+@media (max-height: 750px) and (min-width: 801px) {
+  .inspirationGroups {
+    margin-bottom: 6px;
+  }
+  .inspirationSwatch {
+    height: 23px;
+  }
+  .inspirationHeading {
+    margin-bottom: 5px;
+  }
+  .inspirationGroups button {
+    padding: 4px;
+  }
+  .drop.has-image {
+    height: clamp(115px, 22dvh, 180px);
+  }
+}
+@media (max-width: 800px) {
+  .drop.has-image {
+    height: 245px;
+  }
+}
+.inspirationList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 9px;
+}
+.inspirationGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+.inspirationGroupTitle {
+  font-size: 10px;
+  color: #90939a;
+  margin: 0 0 4px;
+}
+.inspirationHeading {
+  margin-bottom: 9px;
+}
+.inspirationSwatch {
+  height: 22px;
+}
+.inspiration {
+  font-size: 9px;
+  gap: 3px;
+}
+.panel {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.drop.has-image {
+  height: 190px;
+}
+@media (max-height: 750px) and (min-width: 801px) {
+  .inspirationList {
+    gap: 6px;
+  }
+  .inspirationGroupTitle {
+    margin-bottom: 3px;
+  }
+  .inspirationSwatch {
+    height: 18px;
+  }
+  .inspiration {
+    font-size: 8px;
+    gap: 2px;
+  }
+  .panel {
+    gap: 9px;
+  }
+  .drop.has-image {
+    height: 150px;
+  }
+}
+.brandNote {
+  font-size: 9px;
+  color: #aaa;
+  line-height: 1.5;
+  margin: -1px 0 6px;
+}
+.brandName {
+  font-size: 7px;
+  color: #969ba4;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inspirationGroup:first-child .inspiration {
+  gap: 3px;
+}
+#brandSource {
+  font-size: 9px;
+  line-height: 1.6;
+  color: #72819a;
+  margin-top: 8px;
+  text-decoration: none;
+}
+#model {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 9px;
+  border: 1px solid #e0e0e5;
+  border-radius: 9px;
+  background: #f8f8fa;
+  color: #333;
+  font-size: 12px;
+}
+.modelSection {
+  flex: none;
+}
+/* Keep tool sections in normal flow so the sidebar scrolls without shrinking the image area. */
+main {
+  grid-template-rows: minmax(0, 1fr);
+}
+.panel {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.panel > .section,
+.panel > .reference,
+.panel > .actions {
+  margin: 0 0 16px;
+  flex: none;
+}
+.reference {
+  min-height: auto;
+  flex: none;
+}
+.actions {
+  position: static;
+  padding: 0 0 16px;
+  border-bottom: 1px solid #eee;
+}
+.panel > .inspirationSection {
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+.drop.has-image {
+  max-height: none;
+}
+@media (min-width: 801px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+@media (max-width: 800px) {
+  main {
+    height: auto;
+  }
+  .panel {
+    height: auto;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+  .panel > .section,
+  .panel > .reference,
+  .panel > .actions {
+    margin-bottom: 16px;
+  }
+}
+#inspirationToggle {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 10px;
+  font-size: 11px;
+  background: #f6f6f8;
+  border-color: #ededf0;
+  color: #666;
+}
+.inspirationGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.panel > .actions {
+  margin-bottom: 0;
+  padding: 0;
+  border-bottom: 0;
+}
+.panel > .inspirationSection {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+.drop.has-image {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  height: auto;
+  max-height: none;
+  padding: 8px;
+  overflow: visible;
+}
+.drop.has-image #upload {
+  justify-self: start;
+  padding: 6px 9px;
+  background: transparent;
+  border: 0;
+  color: #888;
+}
+#expandReference {
+  font-size: 11px;
+  padding: 6px 9px;
+  color: #303c50;
+  background: #edf0f5;
+  border: 0;
+}
+#expandReference[hidden] {
+  display: none;
+}
+.drop.has-image #refHint {
+  display: none;
+}
+.drop.has-image #refWrap {
+  grid-column: 1/-1;
+  display: flex;
+  flex: none;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.drop.has-image #ref {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+}
+#referenceDialog {
+  width: min(1100px, calc(100vw - 40px));
+  max-width: none;
+  max-height: calc(100dvh - 40px);
+  padding: 16px;
+  border: 1px solid #dedee4;
+  border-radius: 16px;
+  background: #fafafa;
+  color: #333;
+  box-shadow: 0 24px 100px #0003;
+  overflow: auto;
+}
+#referenceDialog::backdrop {
+  background: #17191f80;
+  backdrop-filter: blur(6px);
+}
+.referenceDialogBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  font-size: 12px;
+  color: #777;
+}
+.referenceDialogBar button {
+  background: #1d1d1f;
+  color: white;
+  border-color: #1d1d1f;
+  padding: 8px 18px;
+}
+#referenceDialogImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+#referenceDialog #refWrap {
+  display: flex !important;
+  flex: none;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  background: transparent;
+}
+#referenceDialog #ref {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 135px);
+  object-fit: contain;
+  cursor: crosshair;
+}
+@media (max-width: 600px) {
+  #referenceDialog {
+    width: calc(100vw - 16px);
+    padding: 10px;
+    max-height: calc(100dvh - 16px);
+  }
+  .referenceDialogBar {
+    font-size: 11px;
+  }
+}
+.stepHeading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  background: #eef0f4;
+  color: #657084;
+  font:
+    600 10px -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.stepHint,
+.toolHint {
+  font-size: 10px;
+  line-height: 1.75;
+  color: #8b8d94;
+  margin: 0 0 11px;
+}
+.toolHint {
+  margin: 0 0 9px;
+}
+.rows + .toolHint {
+  margin: 8px 0 0;
+}
+.modelSection #model {
+  margin-top: 0;
+}
+.paintSection > .label {
+  margin-top: 14px;
+}
+.actions .stepHint {
+  text-align: left;
+}
+.actions .stepHeading {
+  color: #1d1d1f;
+}
+.reference > .label {
+  margin-bottom: 6px;
+}
+html.phone-layout,
+html.phone-layout body {
+  height: auto;
+  overflow: auto;
+}
+.phone-layout header {
+  height: 58px;
+  padding: 0 20px;
+  padding-top: env(safe-area-inset-top);
+}
+.phone-layout main {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+.phone-layout .stage {
+  height: clamp(290px, 43svh, 420px);
+  min-height: 290px;
+  padding: 24px 14px 12px;
+}
+.phone-layout h1 {
+  font-size: 25px;
+  margin-top: 8px;
+}
+.phone-layout .brand {
+  font-size: 23px;
+}
+.phone-layout .brand span {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  margin-left: 12px;
+}
+.phone-layout .modelCaption {
+  font-size: 10px;
+  margin: 5px 0;
+}
+.phone-layout .panel {
+  height: auto;
+  overflow: visible;
+  border-left: 0;
+  border-top: 1px solid #e4e4e9;
+  padding: 22px 20px calc(24px + env(safe-area-inset-bottom));
+  scrollbar-gutter: auto;
+}
+.phone-layout .row {
+  min-height: 48px;
+}
+.phone-layout .row span {
+  font-size: 13px;
+}
+.phone-layout .hex {
+  font-size: 12px;
+  width: 78px;
+}
+.phone-layout .row input[type="color"] {
+  width: 36px;
+  height: 36px;
+}
+.phone-layout #model {
+  min-height: 44px;
+  font-size: 14px;
+}
+.phone-layout .seg button {
+  min-height: 40px;
+  font-size: 13px;
+}
+.phone-layout .stepHint,
+.phone-layout .toolHint {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.phone-layout .inspirationSwatch {
+  height: 28px;
+}
+.phone-layout .inspiration {
+  font-size: 10px;
+  min-height: 45px;
+}
+.phone-layout .actions #export {
+  min-height: 48px;
+  font-size: 14px;
+}
+.phone-layout #inspirationToggle {
+  min-height: 42px;
+}
+.phone-layout .toast {
+  max-width: calc(100vw - 32px);
+  width: max-content;
+  text-align: center;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+}
+@media (max-width: 800px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+  .stage,
+  .panel {
+    width: 100%;
+    min-width: 0;
+  }
+  header .brand span {
+    font-size: 11px;
+    margin-left: 12px;
+  }
+  .actions #export {
+    min-height: 46px;
+  }
+}
+.inspirationSwatch {
+  overflow: hidden;
+  isolation: isolate;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  flex-shrink: 0;
+}
+.inspirationSwatch.gradientSwatch {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+.gradientSwatch canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  border-radius: inherit;
+}
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+.panelScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+.panelScroll > .section,
+.panelScroll > .reference {
+  margin-bottom: 16px;
+}
+.panel > .actions {
+  flex: none;
+  margin: 0;
+  padding: 14px 20px max(14px, env(safe-area-inset-bottom));
+  border-top: 1px solid #e4e4e9;
+  background: #fff;
+  z-index: 5;
+}
+.phone-layout .panel {
+  padding: 0;
+  overflow: visible;
+}
+.phone-layout .panelScroll {
+  overflow: visible;
+  padding: 22px 20px;
+}
+.phone-layout .panel > .actions {
+  position: sticky;
+  bottom: 0;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+}
+@media (max-width: 800px) {
+  .panelScroll {
+    overflow: visible;
+    padding: 20px;
+  }
+  .panel > .actions {
+    position: sticky;
+    bottom: 0;
+  }
+  .panel {
+    overflow: visible;
+  }
+}
+@media (max-height: 750px) and (min-width: 801px) {
+  .panelScroll {
+    padding: 14px 18px;
+  }
+  .panel > .actions {
+    padding: 12px 18px;
+  }
+}
+header nav {
+  display: flex;
+  gap: 6px;
+}
+.inspiration {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+select:focus-visible {
+  outline: 3px solid #85b9fa;
+}
+@media (max-width: 500px) {
+  .brand span {
+    display: none;
+  }
+  header {
+    padding: 0 12px;
+  }
+  header nav button {
+    padding: 8px;
+    font-size: 11px;
+  }
+}
