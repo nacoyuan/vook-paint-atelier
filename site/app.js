@@ -114,8 +114,8 @@ function groundPoints() {
           ]
         : model === "v9"
           ? [
-              [365, 951],
-              [1190, 951],
+              [336, 948],
+              [1188, 952],
             ]
           : [
               [349, 970],
@@ -163,7 +163,7 @@ function render() {
             0,
             Math.min(
               1,
-              (x - (model === "v9" ? 805 : model === "crv" ? 760 : 680)) / 320,
+              (x - (model === "v9" ? 785 : model === "crv" ? 760 : 680)) / 320,
             ),
           ),
           t =
@@ -218,6 +218,25 @@ function render() {
   );
 }
 
+// Anchor the V9's shared preview/poster shadows to each tire's measured lower edge.
+function drawV9ContactShadow(target, x, y, scale = 1) {
+  for (const [offset, rx, ry, opacity] of [
+    [1.5, 185, 14, 0.1],
+    [0, 86, 3.8, 0.36],
+  ]) {
+    target.save();
+    target.translate(x, y + offset * scale);
+    target.scale(rx * scale, ry * scale);
+    const gradient = target.createRadialGradient(0, 0, 0, 0, 0, 1);
+    gradient.addColorStop(0, `rgba(25,25,28,${opacity})`);
+    gradient.addColorStop(0.45, `rgba(25,25,28,${opacity * 0.4})`);
+    gradient.addColorStop(1, 'rgba(25,25,28,0)');
+    target.fillStyle = gradient;
+    target.fillRect(-1, -1, 2, 2);
+    target.restore();
+  }
+}
+
 function drawStudio() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -236,8 +255,12 @@ function drawStudio() {
   for (const [gx, gy] of groundPoints()) {
     const x = gx,
       y = gy - CROP.y;
-    shadow(x, y + 6, 232, 23, 0.1);
-    shadow(x, y + 1, 115, 6, 0.29);
+    if (model === "v9") {
+      drawV9ContactShadow(ctx, x, y);
+    } else {
+      shadow(x, y + 6, 232, 23, 0.1);
+      shadow(x, y + 1, 115, 6, 0.29);
+    }
   }
 }
 
@@ -1239,13 +1262,17 @@ function exportPhonePoster() {
     pc.restore();
   }
   for (const [x, y] of groundPoints()) {
-    shadow(
-      dx + x * scale,
-      dy + (y - source.y) * scale + 3,
-      160 * scale,
-      14 * scale,
-      0.15,
-    );
+    if (model === "v9") {
+      drawV9ContactShadow(pc, dx + x * scale, dy + (y - source.y) * scale, scale);
+    } else {
+      shadow(
+        dx + x * scale,
+        dy + (y - source.y) * scale + 3,
+        160 * scale,
+        14 * scale,
+        0.15,
+      );
+    }
   }
   pc.drawImage(
     displayBike,
@@ -1358,8 +1385,12 @@ function exportPoster() {
     bikeX = (pw - displayW) / 2;
   for (const [x, y] of groundPoints()) {
     const groundY = displayY + (y - sourceBox.y) * scale;
-    floorShadow(bikeX + x * scale, groundY + 4, 230 * scale, 20 * scale, 0.11);
-    floorShadow(bikeX + x * scale, groundY, 100 * scale, 5 * scale, 0.24);
+    if (model === "v9") {
+      drawV9ContactShadow(pc, bikeX + x * scale, groundY, scale);
+    } else {
+      floorShadow(bikeX + x * scale, groundY + 4, 230 * scale, 20 * scale, 0.11);
+      floorShadow(bikeX + x * scale, groundY, 100 * scale, 5 * scale, 0.24);
+    }
   }
   pc.drawImage(
     displayBike,
@@ -1423,375 +1454,8 @@ $("export").onclick = exportPoster;
 const surfacePhoto = new Image(),
   maskPhoto = new Image();
 let modelLoad = 0;
-// Small V9 marks are clean vector decals, independent from photographic lettering.
-function rebuildV9SmallLogos() {
-  const d = originalData.data,
-    source = new Uint8ClampedArray(d),
-    lighting = new Uint8ClampedArray(surfaceData),
-    oldInk = new Uint8ClampedArray(masks.logo);
-  const zones = [
-    {
-      part: "frame",
-      poly: [
-        [892, 349],
-        [947, 338],
-        [952, 363],
-        [897, 375],
-      ],
-      dx: -67,
-      dy: 14,
-    },
-    {
-      part: "fork",
-      poly: [
-        [1125, 659],
-        [1147, 653],
-        [1173, 740],
-        [1149, 747],
-      ],
-      dx: -28,
-      dy: -83,
-    },
-  ];
-  for (const z of zones) {
-    for (let y = 200; y < 700; y++)
-      for (let x = 900; x < 1260; x++) {
-        const ox = (x - 50) / 1.02,
-          oy = (y + 110) / 1.02;
-        if (!pointPoly(ox, oy, z.poly)) continue;
-        const i = (y * W + x) * 4;
-        if (source[i + 3] < 230) continue;
-        const sx = Math.round(x + z.dx * 1.02),
-          sy = Math.round(y + z.dy * 1.02),
-          j = (sy * W + sx) * 4;
-        if (source[j + 3] < 240) continue;
-        for (let k = 0; k < 3; k++) d[i + k] = source[j + k];
-        const shadeSamples = [];
-        for (let offset = -4; offset <= 4; offset++) {
-          const q = j + offset * 4;
-          shadeSamples.push(lighting[q]);
-        }
-        surfaceData[i] =
-          shadeSamples.reduce((a, b) => a + b, 0) / shadeSamples.length;
-        surfaceData[i + 1] = lighting[j + 1];
-        masks.logo[i + 3] = 0;
-        masks[z.part][i + 3] = 255;
-      }
-  }
-  // A continuous tube lighting field replaces the photographed lettering's baked-in shadow.
-  for (let y = 210; y < 365; y++)
-    for (let x = 615; x < 1055; x++) {
-      const ox = (x - 50) / 1.02,
-        oy = (y + 110) / 1.02,
-        n = oy + 0.2 * ox;
-      if (n < 520 || n > 566) continue;
-      const i = (y * W + x) * 4;
-      if (masks.frame[i + 3] < 200) continue;
-      const edge = Math.min(
-        1,
-        Math.max(0, (ox - 555) / 30),
-        Math.max(0, (985 - ox) / 28),
-      );
-      if (!edge) continue;
-      const shade =
-        (0.77 + 0.22 * Math.exp(-(((n - 539) / 14) ** 2))) * 0.88 * 255;
-      surfaceData[i] = surfaceData[i] * (1 - edge) + shade * edge;
-      surfaceData[i + 1] *= 1 - edge;
-    }
-  const decals = off(),
-    dc = decals.getContext("2d");
-  dc.fillStyle = "#fff";
-  dc.textBaseline = "middle";
-  dc.font = "italic 900 19px Arial, sans-serif";
-  function mark(x, y, angle, width) {
-    dc.save();
-    dc.translate(50 + x * 1.02, -110 + y * 1.02);
-    dc.rotate((angle * Math.PI) / 180);
-    dc.scale(width / dc.measureText("VOOK").width, 0.68);
-    dc.fillText("VOOK", 0, 0);
-    dc.restore();
-  }
-  mark(899, 357, -11.5, 46);
-  mark(1136, 674, 73, 61);
-  const ink = dc.getImageData(0, 0, W, H).data;
-  for (let i = 3; i < ink.length; i += 4)
-    if (ink[i]) masks.logo[i] = Math.max(masks.logo[i], ink[i]);
-}
-function refineV9PaintEdges() {
-  const src = originalData.data,
-    oldLogo = new Uint8ClampedArray(masks.logo);
-  const patches = [
-    [
-      [539, 437],
-      [568, 428],
-      [595, 427],
-      [594, 442],
-      [566, 448],
-      [554, 461],
-      [553, 478],
-      [559, 501],
-      [547, 492],
-    ],
-    [
-      [278, 774],
-      [548, 811],
-      [547, 819],
-      [305, 785],
-      [278, 781],
-    ],
-    [
-      [524, 779],
-      [568, 783],
-      [557, 824],
-      [535, 828],
-    ],
-  ];
-  for (let y = 270; y < 745; y++)
-    for (let x = 300; x < 1090; x++) {
-      const i = (y * W + x) * 4,
-        ox = (x - 50) / 1.02,
-        oy = (y + 110) / 1.02,
-        lo = Math.min(src[i], src[i + 1], src[i + 2]),
-        hi = Math.max(src[i], src[i + 1], src[i + 2]);
-      if (src[i + 3] < 20) continue;
-      if (
-        patches.some((p) => pointPoly(ox, oy, p)) &&
-        hi - lo < 20 &&
-        lo > 138
-      ) {
-        const coverage = Math.min(1, (lo - 138) / 30) * src[i + 3];
-        masks.frame[i + 3] = Math.max(masks.frame[i + 3], coverage);
-        surfaceData[i] = Math.max(surfaceData[i], Math.min(223, lo * 0.88));
-      }
-    }
-  // Trace the visible white underside rather than cropping it with a straight exclusion line.
-  const lowerStay = [
-    [337, 674],
-    [358, 678],
-    [615, 720],
-    [614, 733],
-    [350, 686],
-    [333, 682],
-  ];
-  const dropout = [
-    [324, 629],
-    [341, 633],
-    [331, 649],
-    [331, 656],
-    [343, 663],
-    [346, 678],
-    [360, 683],
-    [352, 689],
-    [330, 685],
-    [315, 680],
-    [308, 669],
-    [310, 654],
-  ];
-  for (let y = 625; y < 740; y++)
-    for (let x = 300; x < 620; x++) {
-      const i = (y * W + x) * 4,
-        lo = Math.min(src[i], src[i + 1], src[i + 2]),
-        hi = Math.max(src[i], src[i + 1], src[i + 2]);
-      const innerBend = [
-        [336, 621],
-        [356, 623],
-        [347, 637],
-        [344, 649],
-        [351, 657],
-        [374, 661],
-        [373, 666],
-        [340, 660],
-        [334, 649],
-      ];
-      const farStay = [
-        [424, 650],
-        [443, 656],
-        [576, 675],
-        [576, 689],
-        [490, 674],
-        [448, 662],
-      ];
-      const inTube =
-        pointPoly(x, y, lowerStay) ||
-        pointPoly(x, y, dropout) ||
-        pointPoly(x, y, innerBend) ||
-        pointPoly(x, y, farStay);
-      if (!inTube || src[i + 3] < 30 || Math.hypot(x - 325.5, y - 668) < 11.3)
-        continue;
-      if (lo > 150 && hi - lo < 24) {
-        masks.frame[i + 3] = Math.max(
-          masks.frame[i + 3],
-          src[i + 3] * Math.min(1, (lo - 150) / 28),
-        );
-        surfaceData[i] = Math.max(
-          0.67 * 0.88 * 255,
-          Math.min(0.96 * 0.88 * 255, lo * 0.88),
-        );
-        surfaceData[i + 1] = 0;
-      }
-    }
-  // Complete the painted tube behind the front derailleur while leaving its cage and clamp silver/black.
-  const tubeBehindCage = [
-    [669, 574],
-    [681, 591],
-    [694, 629],
-    [700, 636],
-    [688, 635],
-    [677, 606],
-  ];
-  const clamp = [
-    [673, 588],
-    [683, 585],
-    [687, 595],
-    [677, 600],
-  ];
-  for (let y = 573; y < 638; y++)
-    for (let x = 667; x < 703; x++) {
-      const i = (y * W + x) * 4;
-      if (!pointPoly(x, y, tubeBehindCage) || pointPoly(x, y, clamp)) continue;
-      const lo = Math.min(src[i], src[i + 1], src[i + 2]),
-        hi = Math.max(src[i], src[i + 1], src[i + 2]);
-      if (lo > 165 && hi - lo < 20 && src[i + 3] > 200) {
-        masks.frame[i + 3] = src[i + 3];
-        surfaceData[i] = Math.max(0.7 * 0.88 * 255, lo * 0.88);
-        surfaceData[i + 1] = 0;
-      }
-    }
-  // Reconstruct one continuous head-tube lighting field; no hard-edged seam patch.
-  for (let y = 215; y < 392; y++)
-    for (let x = 1020; x < 1155; x++) {
-      const i = (y * W + x) * 4,
-        lo = Math.min(src[i], src[i + 1], src[i + 2]);
-      if (src[i + 3] < 220 || lo < 100 || masks.frame[i + 3] < 100) continue;
-      const blend = Math.max(
-        0,
-        Math.min(
-          1,
-          (x - 1020) / 18,
-          (1155 - x) / 18,
-          (y - 215) / 14,
-          (392 - y) / 18,
-        ),
-      );
-      const natural = (0.62 + (0.36 * lo) / 255) * 0.88 * 255;
-      surfaceData[i] = surfaceData[i] * (1 - blend) + natural * blend;
-      surfaceData[i + 1] *= 1 - blend;
-      masks.frame[i + 3] = Math.max(masks.frame[i + 3], src[i + 3]);
-    }
-  // Local correction: the shaded underside of the seatstay at the seat-tube junction.
-  const stayJointEdge = [
-    [487, 505],
-    [568, 440],
-    [581, 432],
-    [596, 430],
-    [603, 433],
-    [600, 440],
-    [586, 439],
-    [576, 445],
-    [490, 515],
-  ];
-  for (let y = 428; y < 516; y++)
-    for (let x = 487; x < 604; x++) {
-      if (!pointPoly(x, y, stayJointEdge)) continue;
-      const i = (y * W + x) * 4,
-        lo = Math.min(src[i], src[i + 1], src[i + 2]),
-        hi = Math.max(src[i], src[i + 1], src[i + 2]);
-      if (src[i + 3] < 20 || lo < 122 || hi - lo > 18) continue;
-      masks.frame[i + 3] = Math.max(
-        masks.frame[i + 3],
-        src[i + 3] * Math.min(1, (lo - 122) / 28),
-      );
-      surfaceData[i] = Math.max(
-        0.56 * 0.88 * 255,
-        Math.min(0.92 * 0.88 * 255, lo * 0.88),
-      );
-      surfaceData[i + 1] = 0;
-    }
-  // Local cassette-side seatstay silhouette and continuous shading.
-  const rearDiagonal = [
-    [315, 649],
-    [320, 635],
-    [331, 619],
-    [349, 600],
-    [369, 581],
-    [385, 581],
-    [385, 587],
-    [366, 605],
-    [350, 620],
-    [343, 633],
-    [342, 644],
-    [346, 655],
-    [334, 662],
-    [320, 660],
-  ];
-  for (let y = 581; y < 654; y++)
-    for (let x = 315; x < 386; x++) {
-      const i = (y * W + x) * 4;
-      if (!pointPoly(x, y, rearDiagonal)) continue;
-      const lo = Math.min(src[i], src[i + 1], src[i + 2]),
-        hi = Math.max(src[i], src[i + 1], src[i + 2]);
-      if (src[i + 3] < 40 || hi - lo > 20 || lo < 125) continue;
-      const coverage = src[i + 3] * Math.min(1, (lo - 125) / 36);
-      masks.frame[i + 3] = Math.max(masks.frame[i + 3], coverage);
-      surfaceData[i] = (0.62 + (0.36 * lo) / 255) * 0.88 * 255;
-      surfaceData[i + 1] = 0;
-    }
-  const candidate = new Uint8Array(W * H),
-    seen = new Uint8Array(W * H),
-    clean = new Uint8Array(W * H);
-  for (let y = 370; y < 620; y++)
-    for (let x = 790; x < 1030; x++) {
-      const n = y * W + x;
-      if (oldLogo[n * 4 + 3] > 40) candidate[n] = 1;
-      masks.logo[n * 4 + 3] = 0;
-    }
-  for (let y = 370; y < 620; y++)
-    for (let x = 790; x < 1030; x++) {
-      const n = y * W + x;
-      if (!candidate[n] || seen[n]) continue;
-      let q = [n],
-        head = 0,
-        minX = x,
-        maxX = x,
-        minY = y,
-        maxY = y;
-      seen[n] = 1;
-      while (head < q.length) {
-        const v = q[head++],
-          vx = v % W,
-          vy = Math.floor(v / W);
-        minX = Math.min(minX, vx);
-        maxX = Math.max(maxX, vx);
-        minY = Math.min(minY, vy);
-        maxY = Math.max(maxY, vy);
-        for (const t of [v - 1, v + 1, v - W, v + W])
-          if (candidate[t] && !seen[t]) {
-            seen[t] = 1;
-            q.push(t);
-          }
-      }
-      if (
-        q.length > 70 &&
-        q.length / ((maxX - minX + 1) * (maxY - minY + 1)) > 0.14
-      )
-        for (const v of q) clean[v] = 1;
-    }
-  for (let y = 370; y < 620; y++)
-    for (let x = 790; x < 1030; x++) {
-      const n = y * W + x,
-        i = n * 4;
-      let near = false;
-      for (let dy = -1; dy <= 1; dy++)
-        for (let dx = -1; dx <= 1; dx++) near = near || clean[n + dy * W + dx];
-      if (!near) continue;
-      const lo = Math.min(src[i], src[i + 1], src[i + 2]);
-      if (lo >= 235) continue;
-      masks.logo[i + 3] = Math.min(1, (235 - lo) / 24) * src[i + 3];
-      masks.frame[i + 3] = Math.max(masks.frame[i + 3], masks.logo[i + 3]);
-      surfaceData[i] = 0.91 * 0.88 * 255;
-      surfaceData[i + 1] = 0;
-    }
-}
+// V9 base, paint coverage, lettering and illumination are aligned offline.
+// Preserve the new external-steerer cockpit; do not patch it with old model geometry.
 const modelInfo = {
   v8: { caption: "V8 · CARBON WHEELS", name: "VOOK V8" },
   v9: { caption: "V9 · AERO CARBON", name: "VOOK V9" },
@@ -1802,12 +1466,7 @@ const modelAssets = {
   v8: ["v8-base.png", "v8-masks.png", "v8-surface.png"],
   crv: ["crv-base.png", "crv-masks.png", "crv-surface.png"],
   carbon: ["white-carbon.png", "paint-masks.png", "surface-map.png"],
-  v9: [
-    "v9-base.png",
-    "v9-masks.png",
-    "v9-surface.png",
-    "v9-original-wheel.png",
-  ],
+  v9: ["v9-base.png", "v9-masks.png", "v9-surface.png"],
 };
 async function setModel(next) {
   if (!modelAssets[next]) return;
@@ -1840,8 +1499,7 @@ async function setModel(next) {
     for (const k of ["frame", "fork", "logo"])
       masks[k] = new Uint8ClampedArray(packed.length);
     for (let i = 3; i < packed.length; i += 4) {
-      masks.frame[i] =
-        next === "v9" ? Math.max(packed[i - 3], packed[i - 2]) : packed[i - 3];
+      masks.frame[i] = packed[i - 3];
       masks.fork[i] = 0;
       masks.logo[i] = packed[i - 1];
     }
@@ -1855,72 +1513,6 @@ async function setModel(next) {
     document.querySelector('[data-part="fork"]').hidden = true;
     $("modelCaption").textContent = modelInfo[next].caption;
     $("modelEyebrow").textContent = modelInfo[next].name;
-    if (next === "v9") {
-      const rotor = off(),
-        rc = rotor.getContext("2d");
-      rc.drawImage(
-        images[3],
-        50 + 835 * 1.02,
-        -110 + 455 * 1.02,
-        571 * 1.02,
-        590 * 1.02,
-      );
-      const exact = rc.getImageData(0, 0, W, H).data,
-        dst = originalData.data;
-      for (let y = 350; y < 960; y++)
-        for (let x = 895; x < 1490; x++) {
-          const ox = (x - 50) / 1.02,
-            oy = (y + 110) / 1.02;
-          const radiusGuard =
-            ((ox - 1120) / 286) ** 2 + ((oy - 752) / 291) ** 2;
-          if (radiusGuard > 1.08) continue;
-          const i = (y * W + x) * 4;
-          if (
-            masks.frame[i + 3] > 5 ||
-            packed[i + 1] > 5 ||
-            masks.logo[i + 3] > 5
-          )
-            continue;
-          const rr = exact[i],
-            gg = exact[i + 1],
-            bb = exact[i + 2],
-            hi = Math.max(rr, gg, bb),
-            lo = Math.min(rr, gg, bb);
-          if (!exact[i + 3]) {
-            if (x > 900 && y > 354) dst[i + 3] = 0;
-            continue;
-          }
-          const radius = ((ox - 1120) / 286) ** 2 + ((oy - 752) / 291) ** 2;
-          const background =
-            radius < 0.67
-              ? lo > 180 || (hi > 140 && hi - lo < 6)
-              : hi > 185 && hi - lo < 6;
-          dst[i] = rr;
-          dst[i + 1] = gg;
-          dst[i + 2] = bb;
-          dst[i + 3] = background ? 0 : exact[i + 3];
-        }
-    }
-    if (next === "v9") {
-      for (let y = 590; y < 710; y++)
-        for (let x = 290; x < 470; x++) {
-          const i = (y * W + x) * 4;
-          const r = originalData.data[i],
-            g = originalData.data[i + 1],
-            b = originalData.data[i + 2],
-            lo = Math.min(r, g, b),
-            chroma = Math.max(r, g, b) - lo;
-          const neutral = Math.max(0, Math.min(1, (18 - chroma) / 8)),
-            white = Math.max(0, Math.min(1, (lo - 172) / 32));
-          masks.frame[i + 3] *= neutral * white;
-        }
-      rebuildV9SmallLogos();
-      refineV9PaintEdges();
-      for (let i = 3; i < masks.frame.length; i += 4) {
-        masks.frame[i] = Math.max(masks.frame[i], masks.fork[i]);
-        masks.fork[i] = 0;
-      }
-    }
     $("model").value = next;
     uiLabels.frame = paintMode === "gradient" ? t("后部颜色") : t("车架与前叉");
     document.querySelector('.row[data-part="frame"] span').textContent =
